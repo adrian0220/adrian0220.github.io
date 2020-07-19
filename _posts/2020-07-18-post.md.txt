@@ -1,0 +1,116 @@
+---
+title:  "가장 먼 노드"
+excerpt: "Programmers 문제 풀기 - 가장 먼 노드"
+
+categories:
+  - Blog
+tags:
+  - Blog
+last_modified_at: 2020-07-18T12:00:00-17:00
+---
+
+## 1. 문제 설명
+n개의 노드가 있는 그래프가 있습니다. 각 노드는 1부터 n까지 번호가 적혀있습니다. 1번 노드에서 가장 멀리 떨어진 노드의 갯수를 구하려고 합니다. 가장 멀리 떨어진 노드란 최단경로로 이동했을 때 간선의 개수가 가장 많은 노드들을 의미합니다.
+
+노드의 개수 n, 간선에 대한 정보가 담긴 2차원 배열 vertex가 매개변수로 주어질 때, 1번 노드로부터 가장 멀리 떨어진 노드가 몇 개인지를 return 하도록 solution 함수를 작성해주세요.
+
+
+## 2. 해결 Point
+
+이 문제는 Graph를 이용해 문제를 풀어야 한다.
+그래프를 구성하는 방법 중에서 이차원 행렬을 사용하도록 하자.
+
+####edge -> bfsgraph
+
+- edge : 그래프에서 간선에 대한 정보 (int [][])
+- bfsgraph : 이동 가능한 노드에 대한 정보를 담은 배열 (boolean [][])
+
+
+
+
+그래프를 만들었다면 1번 노드부터 각 노드까지의 최단 거리를 구해야 한다.
+
+1번 노드를 시작으로 BFS를 구성하면 쉽게 구할 수 있다. 
+
+
+
+
+## 3. 이론
+
+- BFS (Breadth-First-Search)
+
+루트 노드에서 시작해서 인접한 노드를 먼저 탐색하는 방법
+ 
+시작 정점으로 부터 가까운 정점을 먼저 방문하고 멀리 떨어져 있는 정점은 나중에 방문한다.
+
+방문한 노드들을 차례로 저장하고 꺼내야 하므로 선입 선출 방식의 저장 공간이 필요하다.
+
+##<pseudo code>
+
+```
+void BFS (Node root) {
+  Queue queue = new Queue();
+  queue.add(root);  // root 노드 큐 추가
+
+  while (!queue.isEmpty) {
+    Node node = queue.poll();
+    visited[node] = true;
+
+    for (Node n : n.adj()){
+      if (!visited[n]) {
+        queue.add(n);
+      }    
+    }
+  }  
+}
+```
+
+
+
+## 4. Source Code
+
+```
+import java.util.Queue;
+import java.util.LinkedList;
+class Solution {
+
+  public boolean[][] bfsGraph;
+  public int size;
+
+  public int solution(int n, int[][] edge) {
+    int answer=0;
+    int max = Integer.MIN_VALUE;
+    size = n;
+    bfsGraph = new boolean[n+1][n+1];
+    int[] distance = new int[n+1];
+
+    for(int i=0; i<edge.length; i++){
+      bfsGraph[edge[i][0]][edge[i][1]] = true;
+      bfsGraph[edge[i][1]][edge[i][0]] = true;
+    }
+
+    Queue<Integer> queue = new LinkedList<Integer>();
+    queue.add(1);
+
+    while(!queue.isEmpty()){
+      int node = queue.poll();
+      for(int x = 1; x<=size; x++){
+        if(bfsGraph[node][x] && distance[x] == 0){
+          distance[x] = distance[node] + 1;
+          queue.add(x);
+          max = Math.max(max, distance[x]);
+        }
+      }
+    }
+
+    for(int x = 2; x<=size; x++){
+      if(max == distance[x]) answer++;
+    }
+
+    return answer;
+  }
+}
+
+
+
+```
